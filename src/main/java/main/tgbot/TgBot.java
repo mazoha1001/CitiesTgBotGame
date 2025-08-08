@@ -67,8 +67,8 @@ public class TgBot implements SpringLongPollingBot, LongPollingSingleThreadUpdat
             case "/start" -> sendMessage(update, "Привет!\n" +
                     "Я бот для игры в города! Я знаю все города в мире!\n" +
                     "Твой текущий рекорд: " + player.getHighScore().toString() + " очков!\n" +
-                    "Узнать текущий счет и рекорд: /score\n" +
-                    "Начать игру заново: /reset\n" +
+                    "Узнать текущий счет и рекорд:\n/score\n" +
+                    "Начать игру заново:\n /reset\n" +
                     "Напиши город и мы начнем игру!");
             case "/reset" -> {
                 sendMessage(update, "Отлично! Ты дошел до " + player.getScore().toString() + " очков!\n" +
