@@ -75,7 +75,7 @@ public class TgBot implements SpringLongPollingBot, LongPollingSingleThreadUpdat
                     "Твой текущий рекорд: " + player.getHighScore().toString() + " очков!\n" +
                     "Узнать текущий счет и рекорд:\n/score\n" +
                     "Посмотреть таблицу рекордов:\n" +
-                    "/getLeaderboard\n" +
+                    "/leaderboard\n" +
                     "Начать игру заново:\n /reset\n" +
                     "Напиши город и мы начнем игру!");
             case "/reset" -> {
@@ -89,7 +89,7 @@ public class TgBot implements SpringLongPollingBot, LongPollingSingleThreadUpdat
             }
             case "/score" -> sendMessage(update, "Твой текущий счет: " + player.getScore().toString() + " очков\n" +
                     "Твой рекорд: " + player.getHighScore().toString() + " очков");
-            case "/getLeaderboard" ->
+            case "/leaderboard" ->
                     sendMessage(update, topPlayersToString(playerService.getTopPlayers(Limit.of(10))));
             default -> {
                 if (!citiesGame.isCityExist(messageText)) {
