@@ -13,6 +13,7 @@ import java.util.HashSet;
 public class Player {
     @Id
     private String id;
+    private String name;
     private HashSet<String> busyCities;
     private Integer score;
     private Integer highScore;

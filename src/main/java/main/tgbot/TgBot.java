@@ -4,6 +4,7 @@ import main.cities.CitiesGame;
 import main.config.AppProps;
 import main.entity.Player;
 import main.service.PlayerService;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.BotSession;
@@ -17,6 +18,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class TgBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
@@ -56,18 +59,23 @@ public class TgBot implements SpringLongPollingBot, LongPollingSingleThreadUpdat
         Player player = new Player();
         if (!playerService.isPlayerExist(chatId)) {
             player.setId(chatId);
+            player.setName(update.getMessage().getFrom().getFirstName() + " " + update.getMessage().getFrom().getLastName());
             player.setScore(0);
             player.setHighScore(0);
             player.setBusyCities(new HashSet<String>());
             playerService.savePlayer(player);
         } else {
             player = playerService.getPlayer(chatId);
+            player.setName(update.getMessage().getFrom().getFirstName() + " " + update.getMessage().getFrom().getLastName());
+
         }
         switch (messageText) {
             case "/start" -> sendMessage(update, "Привет!\n" +
                     "Я бот для игры в города! Я знаю все города в мире!\n" +
                     "Твой текущий рекорд: " + player.getHighScore().toString() + " очков!\n" +
                     "Узнать текущий счет и рекорд:\n/score\n" +
+                    "Посмотреть таблицу рекордов:\n" +
+                    "/getLeaderboard\n" +
                     "Начать игру заново:\n /reset\n" +
                     "Напиши город и мы начнем игру!");
             case "/reset" -> {
@@ -81,6 +89,8 @@ public class TgBot implements SpringLongPollingBot, LongPollingSingleThreadUpdat
             }
             case "/score" -> sendMessage(update, "Твой текущий счет: " + player.getScore().toString() + " очков\n" +
                     "Твой рекорд: " + player.getHighScore().toString() + " очков");
+            case "/getLeaderboard" ->
+                    sendMessage(update, topPlayersToString(playerService.getTopPlayers(Limit.of(10))));
             default -> {
                 if (!citiesGame.isCityExist(messageText)) {
                     sendMessage(update, "Такого города не существует!\nПопробуй другой!");
@@ -94,6 +104,17 @@ public class TgBot implements SpringLongPollingBot, LongPollingSingleThreadUpdat
                 }
             }
         }
+    }
+
+    public String topPlayersToString(List<Player> players) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Топовые игроки:\n");
+        int i = 1;
+        for (Player player : players) {
+            sb.append(i).append(") ").append(player.getName()).append(": ").append(player.getHighScore()).append("\n");
+            i++;
+        }
+        return sb.toString();
     }
 
     public void sendMessage(Update update, String answer) {

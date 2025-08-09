@@ -3,9 +3,10 @@ package main.service;
 import lombok.RequiredArgsConstructor;
 import main.entity.Player;
 import main.repository.PlayerRepository;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,10 @@ public class PlayerService {
 
     public void savePlayer(Player player) {
         playerRepository.save(player);
+    }
+
+    public List<Player> getTopPlayers(Limit limit) {
+        return playerRepository.findTopPlayersByScore(limit);
     }
 
 
