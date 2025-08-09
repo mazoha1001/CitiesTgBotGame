@@ -59,7 +59,12 @@ public class TgBot implements SpringLongPollingBot, LongPollingSingleThreadUpdat
         Player player = new Player();
         if (!playerService.isPlayerExist(chatId)) {
             player.setId(chatId);
-            player.setName(update.getMessage().getFrom().getFirstName() + " " + update.getMessage().getFrom().getLastName());
+            if (update.getMessage().getFrom().getLastName() != null) {
+                player.setName(update.getMessage().getFrom().getFirstName() + " " + update.getMessage().getFrom().getLastName());
+            } else {
+                player.setName(update.getMessage().getFrom().getFirstName());
+            }
+
             player.setScore(0);
             player.setHighScore(0);
             player.setBusyCities(new HashSet<String>());
@@ -70,7 +75,6 @@ public class TgBot implements SpringLongPollingBot, LongPollingSingleThreadUpdat
                 player.setName(update.getMessage().getFrom().getFirstName() + " " + update.getMessage().getFrom().getLastName());
             } else {
                 player.setName(update.getMessage().getFrom().getFirstName());
-
             }
 
         }
