@@ -66,7 +66,12 @@ public class TgBot implements SpringLongPollingBot, LongPollingSingleThreadUpdat
             playerService.savePlayer(player);
         } else {
             player = playerService.getPlayer(chatId);
-            player.setName(update.getMessage().getFrom().getFirstName() + " " + update.getMessage().getFrom().getLastName());
+            if (update.getMessage().getFrom().getLastName() != null) {
+                player.setName(update.getMessage().getFrom().getFirstName() + " " + update.getMessage().getFrom().getLastName());
+            } else {
+                player.setName(update.getMessage().getFrom().getFirstName());
+
+            }
 
         }
         switch (messageText) {
@@ -89,8 +94,7 @@ public class TgBot implements SpringLongPollingBot, LongPollingSingleThreadUpdat
             }
             case "/score" -> sendMessage(update, "Твой текущий счет: " + player.getScore().toString() + " очков\n" +
                     "Твой рекорд: " + player.getHighScore().toString() + " очков");
-            case "/leaderboard" ->
-                    sendMessage(update, topPlayersToString(playerService.getTopPlayers(Limit.of(10))));
+            case "/leaderboard" -> sendMessage(update, topPlayersToString(playerService.getTopPlayers(Limit.of(10))));
             default -> {
                 if (!citiesGame.isCityExist(messageText)) {
                     sendMessage(update, "Такого города не существует!\nПопробуй другой!");
